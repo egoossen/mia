@@ -18,11 +18,16 @@ along with this program.  If not, see [https://www.gnu.org/licenses/].
     
 ## Installation
 
-Download the dist folder corresponding to your operating system. place the 
+### Windows
+Download mia-win.zip to the directory where you want to install Mia. Unzip the folder.
+
+Create a text file name ".env" and enter "CANVAS_API_KEY = {your key here}" and "CANVAS_API_URL = {your URL here}" on two separate lines. Your Canvas API Key can be generated under Account > Settings > Approved Integration > + New Access Token. Set an expiration date for the access token to improve security.
+
+If desired, created a shortcut for Mia by right clicking on the .exe file and selecting Send To > Desktop (create shortcut).
 
 ## Usage
 
-TBD
+In progress.
 
 ## Authors
 
