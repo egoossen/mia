@@ -9,22 +9,21 @@ class Course(object):
 		self.canvas = importer
 		self.data_file = self.name.lower().replace(' ','-') + '-data.json'
 
-		self.data = dict()
+		self.data = {'assignments':dict(),'students':dict(),'missing':dict()}
 		try:
 			self.data = cfg.load(config_file = self.data_file)
 		except FileNotFoundError:
-			self.data['assignments'] = self.canvas.import_assignments(self.id)
+			#self.data['assignments'] = self.canvas.import_assignments(self.id)
 			self.data['students'] = self.canvas.import_students(self.id)
-			self.data['missing'] = dict()
-
 			for student_id in self.data['students']:
 				if not student_id in self.data['missing']:
 					self.data['missing'][student_id] = dict()
 
-			for assignment_id in self.data['assignments']:
-				self.get_missing(assignment_id)
+			self.add_assignments(self.get_new_assignments())
+			#for assignment_id in self.data['assignments']:
+			#	self.get_missing(assignment_id)
 			
-			cfg.save(self.data, config_file = self.data_file)
+			#cfg.save(self.data, config_file = self.data_file)
 
 	def get_missing(self,assignment_id):
 		submission_dict = self.canvas.import_submissions(self.id, assignment_id)
@@ -39,6 +38,29 @@ class Course(object):
 	
 	def update_data(self, data):
 		cfg.save(self.data, config_file = self.data_file)
+
+	def get_new_assignments(self):
+		assignments = self.canvas.import_assignments(self.id)
+		self.new_assignments = dict()
+		for key in assignments:
+			if key not in self.data['assignments']:
+				self.new_assignments[key] = assignments[key]
+		return self.new_assignments
+	
+	def add_assignments(self, include_assignments='All'):
+		if include_assignments == 'All':
+			for assignment_id in self.new_assignments:
+				include_assignments[assignment_id] = True
+		for assignment_id, assignment in self.new_assignments.items():
+			if include_assignments[assignment_id]:
+				self.data['assignments'][assignment_id] = assignment
+		
+		for assignment_id in self.data['assignments']:
+			self.get_missing(assignment_id)
+		
+		cfg.save(self.data, config_file = self.data_file)
+		
+
 	
 	#def toggle_missing(self,assignment_id,student_id):
 	#	self.data['missing'][student_id][assignment_id] = not self.data['missing'][student_id][assignment_id]

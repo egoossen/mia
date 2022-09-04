@@ -16,7 +16,7 @@ class App(object):
 		self.cfg['courses'] = self.canvas.import_courses()
 		cfg.save(self.cfg, 'config.json')
 	
-	def get_data(self, course_id):
+	def initialize_course(self, course_id):
 		course_name = self.cfg['courses'][course_id]
 		self.course = crs.Course(
 			course_id = course_id,
@@ -24,6 +24,13 @@ class App(object):
 			importer = self.canvas,
 			printer = self.printer
 		)
+		new_assignments = self.course.get_new_assignments()
+		return new_assignments
+	
+	def add_assignments(self, include_assignments):
+		self.course.add_assignments(include_assignments)
+
+	def get_data(self):
 		return self.course.get_data()
 
 	def print_report(self, all_data):

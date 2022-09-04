@@ -47,10 +47,51 @@ class GUI(tk.Tk):
 		self.app.import_courses()
 		self.load_courses()
 	
+	def new_assignments(self,new_assignments):
+		popup = tk.Toplevel()
+		popup.grab_set()
+		frame = ttk.Frame(popup, padding='5')
+		frame.grid(row=1,column=0,columnspan=2,sticky=(tk.N, tk.E, tk.S, tk.W))
+		label_text = '{} new assignments found. Press "Save"\nto include selected assignments.'.format(len(new_assignments))
+		ttk.Label(popup,text=label_text).grid(
+			row=0,column=0,columnspan=2,sticky=(tk.E, tk.W))
+		include_assignment = {}
+		row = 0
+		for assignment_id, assignment in new_assignments.items():
+			include_assignment[assignment_id] = tk.BooleanVar(value=True)
+			ttk.Checkbutton(
+				frame,
+				text = assignment['name'],
+				variable = include_assignment[assignment_id]
+			).grid(row=row,column=0,sticky=(tk.W))
+			row += 1
+		ttk.Button(
+			popup,
+			text='Save',
+			command=lambda:self.add_assignments(include_assignment,popup)
+		).grid(row=2,column=1)
+		ttk.Button(popup,text='Close',command=popup.destroy).grid(row=2, column=0)
+		
+		for child in popup.winfo_children():
+			child.grid_configure(padx=5, pady=5)
+		
+		popup.wait_window()
+	
+	def add_assignments(self,include_assignment,popup):
+		for key in include_assignment:
+			include_assignment[key] = bool(include_assignment[key].get())
+		self.app.add_assignments(include_assignment)
+		popup.destroy()
+	
 	def preview(self):
 		idx = self.lbox.curselection()[0]
 		course_id = self.course_ids[idx]
-		self.data = self.app.get_data(course_id)
+
+		new_assignments = self.app.initialize_course(course_id)
+		if (len(new_assignments)) != 0:
+			self.new_assignments(new_assignments)
+
+		self.data = self.app.get_data()
 
 		popup = tk.Toplevel()
 		popup.grab_set()
@@ -86,6 +127,8 @@ class GUI(tk.Tk):
 		ttk.Button(popup,text='Save and Print',command=lambda: self.print_report(popup)).grid(
 			row=0,column=2,sticky = (tk.E, tk.W)
 		)
+		for child in popup.winfo_children():
+			child.grid_configure(padx=5, pady=5)
 
 	def print_report(self,popup):
 		popup.destroy()
