@@ -1,5 +1,5 @@
-import random, miaprinter, webbrowser, test_import, canvasimport, dotenv, os, time
-import ekgconfig as cfg
+#import miaprinter, test_import, canvasimport, dotenv, os
+import ekgconfig as cfg, time
 from collections import OrderedDict
 
 class Course(object):
@@ -14,17 +14,12 @@ class Course(object):
 		try:
 			self.data = cfg.load(config_file = self.data_file)
 		except FileNotFoundError:
-			#self.data['assignments'] = self.canvas.import_assignments(self.id)
 			self.data['students'] = self.canvas.import_students(self.id)
 			for student_id in self.data['students']:
 				if not student_id in self.data['missing']:
 					self.data['missing'][student_id] = dict()
 
 			self.add_assignments(self.get_new_assignments())
-			#for assignment_id in self.data['assignments']:
-			#	self.get_missing(assignment_id)
-			
-			#cfg.save(self.data, config_file = self.data_file)
 
 	def get_missing(self,assignment_id):
 		submission_dict = self.canvas.import_submissions(self.id, assignment_id)
@@ -69,10 +64,10 @@ if __name__ == '__main__':
 	URL = os.getenv('CANVAS_API_URL')
 	KEY = os.getenv('CANVAS_API_KEY')
 	COURSE_ID = 805953
-	COURSE_NAME = 'Necromancy'
+	COURSE_NAME = 'Monster Recognition'
 	printer = miaprinter.MiaPrinter()
-	importer = test_import.TestImporter()
-	#importer = canvasimport.CanvasImporter(URL, KEY)
+	#importer = test_import.TestImporter()
+	importer = canvasimport.CanvasImporter(URL, KEY)
 	course = Course(COURSE_ID, COURSE_NAME,printer,importer)
 	data = course.preview()
 	course.print_report(data)

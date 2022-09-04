@@ -1,6 +1,6 @@
-import test_import, miaprinter, dotenv, os, canvasimport, webbrowser, time
-import ekgconfig as cfg
-import course as crs
+#import test_import, miaprinter, dotenv, os, canvasimport, 
+import webbrowser, time
+import course as crs, ekgconfig as cfg
 from collections import OrderedDict
 
 class App(object):
@@ -41,15 +41,12 @@ class App(object):
 		self.course.update_data(all_data)
 		report_data = {}
 		for assignment_id, assignment in all_data['assignments'].items():
-			print(assignment['due'])
 			assignment['due'] = time.strftime('%d %b %Y',tuple(assignment['due']))
 		remove_students = {student_id for student_id in all_data['students']}
 		for student_id, student_name in all_data['students'].items():
 			report_data[student_name] = list()
 			for assignment_id, assignment in all_data['assignments'].items():
 				if all_data['missing'][student_id][assignment_id]:
-					#formated_assignment = assignment
-					#formated_assignment['due'] = time.strftime('%d %b %Y',assignment['due'])
 					report_data[student_name].append(assignment)
 					remove_students.discard(student_id)
 		for student_id in remove_students:
@@ -82,12 +79,12 @@ def return_name(student):
 	return student[1]
 
 if __name__ == '__main__':
-	#dotenv.load_dotenv()
-	#URL = os.getenv('CANVAS_API_URL')
-	#KEY = os.getenv('CANVAS_API_KEY')
+	dotenv.load_dotenv()
+	URL = os.getenv('CANVAS_API_URL')
+	KEY = os.getenv('CANVAS_API_KEY')
 	printer = miaprinter.MiaPrinter()
-	#importer = canvasimport.CanvasImporter(URL, KEY)
-	importer = test_import.TestImporter()
+	importer = canvasimport.CanvasImporter(URL, KEY)
+	#importer = test_import.TestImporter()
 	app = App(importer = importer,printer = printer)
 
 

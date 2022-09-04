@@ -148,12 +148,12 @@ class GUI(tk.Tk):
 		self.app.print_report(self.data)
 
 if __name__ == '__main__':
-	#dotenv.load_dotenv()
-	#URL = os.getenv('CANVAS_API_URL')
-	#KEY = os.getenv('CANVAS_API_KEY')
+	dotenv.load_dotenv()
+	URL = os.getenv('CANVAS_API_URL')
+	KEY = os.getenv('CANVAS_API_KEY')
 	printer = miaprinter.MiaPrinter()
-	#canvas = canvasimport.CanvasImporter(URL, KEY)
-	canvas = test_import.TestImporter()
+	canvas = canvasimport.CanvasImporter(URL, KEY)
+	#canvas = test_import.TestImporter()
 	app = a.App(importer = canvas, printer = printer)
 	gui = GUI(app)
 	gui.mainloop()
