@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-import dotenv, os, miaprinter, canvasimport, app as a
+import dotenv, os, miaprinter, canvasimport, app as a, scrollableframe as sf
 import test_import
 
 
@@ -48,18 +48,24 @@ class GUI(tk.Tk):
 		self.load_courses()
 	
 	def preview(self):
-		popup = tk.Toplevel()
-		popup.grab_set()
-
 		idx = self.lbox.curselection()[0]
 		course_id = self.course_ids[idx]
 		self.data = self.app.get_data(course_id)
 
+		popup = tk.Toplevel()
+		popup.grab_set()
+		missing_fr = sf.ScrollableFrame(popup,width=350,height=350,padding='5')
+		missing_fr.grid(row=0,column=1,sticky=(tk.N, tk.E, tk.S, tk.W))
+
 		row = 0
 		student_labels = {}
+
 		for student_id, student_name in self.data['students'].items():
 			student_included = False
-			student_labels[student_id] = ttk.Label(popup,text=student_name)
+			student_labels[student_id] = ttk.Label(
+				missing_fr.scrollable_frame,
+				text=student_name
+			)
 			for assignment_id, assignment in self.data['assignments'].items():
 				if self.data['missing'][student_id][assignment_id]:
 					if not student_included:
@@ -70,14 +76,15 @@ class GUI(tk.Tk):
 					self.data['missing'][student_id][assignment_id] = tk.BooleanVar(
 						value = self.data['missing'][student_id][assignment_id])
 					ttk.Checkbutton(
-						popup,
+						missing_fr.scrollable_frame,
 						text = assignment['name'],
 						variable = self.data['missing'][student_id][assignment_id]
 					).grid(row=row,column=0,sticky=(tk.W))
 					row += 1
+
 		
 		ttk.Button(popup,text='Save and Print',command=lambda: self.print_report(popup)).grid(
-			row=0,column=1,sticky = (tk.N, tk.E, tk.S, tk.W)
+			row=0,column=2,sticky = (tk.E, tk.W)
 		)
 
 	def print_report(self,popup):

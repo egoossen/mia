@@ -44,7 +44,6 @@ class App(object):
 		with open(outfile, 'w') as f:
 			f.write(html_file)
 		webbrowser.open(outfile)
-	
 
 if __name__ == '__main__':
 	#dotenv.load_dotenv()
