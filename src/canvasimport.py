@@ -1,8 +1,56 @@
-from canvasapi import Canvas
+import canvasapi, dotenv, os
 
-class CanvasImporter(Canvas):
+class CanvasImporter(canvasapi.Canvas):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
+
+	def import_courses(self):
+		courses = self.get_courses(
+			enrollment_type = 'teacher',
+			enrollment_state = 'active'
+		)
+		course_dict = {}
+		for course in courses:
+			course_dict[course.id] = course.name
+		return course_dict
+	
+	def import_students(self, course_id):
+		course = self.get_course(course_id)
+		users = course.get_users(enrollment_type=['student'])
+		user_dict = {}
+		for user in users:
+			user_dict[user.id] = user.sortable_name
+		user_dict[1252174] = 'Student, Test'
+		return user_dict
+	
+	def import_assignments(self, course_id):
+		course = self.get_course(course_id)
+		assignments = course.get_assignments()
+		assign_dict = {}
+		for assignment in assignments:
+			assign_dict[assignment.id] = {
+				'name':assignment.name,
+				'points':assignment.points_possible,
+				'due':assignment.due_at
+			}
+		return assign_dict
+	
+	def import_submissions(self, course_id, assignment_id):
+		course = self.get_course(course_id)
+		assignment = course.get_assignment(assignment_id)
+		#sections = course.get_sections()
+		#for section in sections:
+		submissions = assignment.get_submissions(
+			include = ['user']
+		)
+		submission_dict = {}
+		for submission in submissions:
+			submission_dict[submission.user['id']] = submission.missing
+		return submission_dict
+
+
+
+	#Functions below this line are deprecated
 
 	def get_missing(self, course_id, showtest=False):
 		course = self.get_course(course_id)
@@ -49,12 +97,25 @@ class CanvasImporter(Canvas):
 		month = months[month]
 		return ' '.join([day,month,year])
 
-	def import_courses(self):
-		courses = self.get_courses(
-			enrollment_type = 'teacher',
-			enrollment_state = 'active'
-		)
-		course_dict = {}
-		for course in courses:
-			course_dict[course.id] = course.name
-		return course_dict
+
+
+if __name__ == '__main__':
+	dotenv.load_dotenv()
+	URL = os.getenv('CANVAS_API_URL')
+	KEY = os.getenv('CANVAS_API_KEY')
+	canvas = CanvasImporter(URL, KEY)
+	#USER_ID = 1252154
+	#ASSIGNMENT_ID = 4100760
+	#COURSE_ID = 805953
+	#assignments = canvas.get_assignments(COURSE_ID)
+	#users = canvas.get_students(COURSE_ID)
+	#print(users)
+	#assignment_ids = [key for key in assignments]
+	#print(assignments)
+	#course = canvas.get_course(COURSE_ID)
+	#enrollments = course.get_enrollments()
+	#for enrollment in enrollments:
+	#	print(enrollment.user['id'],enrollment.user['name'])
+
+	#for key,item in canvas.get_submissions(COURSE_ID,ASSIGNMENT_ID).items():
+	#	print(users[key], item)

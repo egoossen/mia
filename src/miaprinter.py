@@ -22,6 +22,7 @@ class MiaPrinter(object):
 		)
 		return subs
 
+	# Methods below this line are deprecated
 	def html2pdf(self, html, outfile):
 		options = {
 			'page-size': 'Letter',
