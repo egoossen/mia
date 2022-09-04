@@ -1,5 +1,6 @@
 import random, miaprinter, webbrowser, test_import, canvasimport, dotenv, os, time
 import ekgconfig as cfg
+from collections import OrderedDict
 
 class Course(object):
 	def __init__(self,course_id,course_name,printer,importer):
@@ -46,7 +47,7 @@ class Course(object):
 			if key not in self.data['assignments']:
 				due_date = time.strptime(assignments[key]['due'],'%Y-%m-%dT%H:%M:%SZ')
 				if due_date <= time.localtime():
-					assignments[key]['due'] = time.strftime('%d %b %Y',due_date)
+					assignments[key]['due'] = due_date
 					self.new_assignments[key] = assignments[key]
 		return self.new_assignments
 	
@@ -62,12 +63,6 @@ class Course(object):
 			self.get_missing(assignment_id)
 		
 		cfg.save(self.data, config_file = self.data_file)
-		
-
-	
-	#def toggle_missing(self,assignment_id,student_id):
-	#	self.data['missing'][student_id][assignment_id] = not self.data['missing'][student_id][assignment_id]
-
 
 if __name__ == '__main__':
 	dotenv.load_dotenv()

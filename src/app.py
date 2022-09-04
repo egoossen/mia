@@ -1,6 +1,7 @@
-import test_import, miaprinter, dotenv, os, canvasimport, webbrowser
+import test_import, miaprinter, dotenv, os, canvasimport, webbrowser, time
 import ekgconfig as cfg
 import course as crs
+from collections import OrderedDict
 
 class App(object):
 	def __init__(self, importer, printer):
@@ -36,11 +37,17 @@ class App(object):
 	def print_report(self, all_data):
 		self.course.update_data(all_data)
 		report_data = {}
+		all_data['assignments'] = sort_assignments(all_data['assignments'])
+		for assignment_id, assignment in all_data['assignments'].items():
+			print(assignment['due'])
+			assignment['due'] = time.strftime('%d %b %Y',tuple(assignment['due']))
 		remove_students = {student_id for student_id in all_data['students']}
 		for student_id, student_name in all_data['students'].items():
 			report_data[student_name] = list()
 			for assignment_id, assignment in all_data['assignments'].items():
 				if all_data['missing'][student_id][assignment_id]:
+					#formated_assignment = assignment
+					#formated_assignment['due'] = time.strftime('%d %b %Y',assignment['due'])
 					report_data[student_name].append(assignment)
 					remove_students.discard(student_id)
 		for student_id in remove_students:
@@ -51,6 +58,17 @@ class App(object):
 		with open(outfile, 'w') as f:
 			f.write(html_file)
 		webbrowser.open(outfile)
+
+def sort_assignments(my_dict):
+	assignment_list = []
+	for key,value in my_dict.items():
+		assignment_list.append((key,value))
+	assignment_list = sorted(assignment_list,key=return_due)
+	sorted_dict = OrderedDict(assignment_list)
+	return sorted_dict
+
+def return_due(assignment):
+	return time.strftime('%Y%m%d',tuple(assignment[1]['due']))
 
 if __name__ == '__main__':
 	#dotenv.load_dotenv()
