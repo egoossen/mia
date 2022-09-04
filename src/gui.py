@@ -28,8 +28,11 @@ class GUI(tk.Tk):
 
 		ttk.Button(mainframe, text='Reload Courses', command=self.update_courses).grid(
 			column=1, row=1, sticky=(tk.E, tk.W))
-		ttk.Button(mainframe, text='Preview', command=self.preview).grid(
-			column=1, row=2, sticky=(tk.E, tk.W))
+		pb = ttk.Button(mainframe, text='Preview', command=self.preview)
+		pb.grid(column=1, row=2, sticky=(tk.E, tk.W))
+		pb.state(['disabled'])
+		self.lbox.bind('<<ListboxSelect>>', lambda e: pb.state(['!disabled']))
+		self.lbox.bind('<Double-1>', lambda e: self.preview())
 
 		for child in mainframe.winfo_children():
 			child.grid_configure(padx=5, pady=5)
@@ -49,10 +52,12 @@ class GUI(tk.Tk):
 	
 	def new_assignments(self,new_assignments):
 		popup = tk.Toplevel()
+		popup.wait_visibility()
 		popup.grab_set()
+		popup.title('Add New Assignments')
 		frame = ttk.Frame(popup, padding='5')
 		frame.grid(row=1,column=0,columnspan=2,sticky=(tk.N, tk.E, tk.S, tk.W))
-		label_text = '{} new assignments found. Press "Save"\nto include selected assignments.'.format(len(new_assignments))
+		label_text = '{} new assignments found! Press "Save"\nto include selected assignments.'.format(len(new_assignments))
 		ttk.Label(popup,text=label_text).grid(
 			row=0,column=0,columnspan=2,sticky=(tk.E, tk.W))
 		include_assignment = {}
@@ -87,6 +92,8 @@ class GUI(tk.Tk):
 		idx = self.lbox.curselection()[0]
 		course_id = self.course_ids[idx]
 
+		title_str = self.courses[idx] + ' Report Preview'
+
 		new_assignments = self.app.initialize_course(course_id)
 		if (len(new_assignments)) != 0:
 			self.new_assignments(new_assignments)
@@ -94,7 +101,9 @@ class GUI(tk.Tk):
 		self.data = self.app.get_data()
 
 		popup = tk.Toplevel()
+		popup.wait_visibility()
 		popup.grab_set()
+		popup.title(title_str)
 		missing_fr = sf.ScrollableFrame(popup,width=350,height=350,padding='5')
 		missing_fr.grid(row=0,column=1,sticky=(tk.N, tk.E, tk.S, tk.W))
 
