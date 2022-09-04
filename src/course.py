@@ -4,7 +4,7 @@ from collections import OrderedDict
 
 class Course(object):
 	def __init__(self,course_id,course_name,printer,importer):
-		self.id = course_id
+		self.id = str(course_id)
 		self.name = course_name
 		self.printer = printer
 		self.canvas = importer
@@ -16,15 +16,15 @@ class Course(object):
 		except FileNotFoundError:
 			self.data['students'] = self.canvas.import_students(self.id)
 			for student_id in self.data['students']:
-				if not student_id in self.data['missing']:
-					self.data['missing'][student_id] = dict()
+				if not str(student_id) in self.data['missing']:
+					self.data['missing'][str(student_id)] = dict()
 
 			self.add_assignments(self.get_new_assignments())
 
 	def get_missing(self,assignment_id):
 		submission_dict = self.canvas.import_submissions(self.id, assignment_id)
 		for student_id in submission_dict:
-			self.data['missing'][student_id][assignment_id] = submission_dict[student_id]
+			self.data['missing'][str(student_id)][str(assignment_id)] = submission_dict[student_id]
 
 	def get_data(self):
 		return self.data

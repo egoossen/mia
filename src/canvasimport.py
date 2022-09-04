@@ -19,8 +19,8 @@ class CanvasImporter(canvasapi.Canvas):
 		users = course.get_users(enrollment_type=['student'])
 		user_dict = {}
 		for user in users:
-			user_dict[user.id] = user.sortable_name
-		user_dict[1252174] = 'Student, Test'
+			user_dict[str(user.id)] = user.sortable_name
+		user_dict['1252174'] = 'Student, Test'
 		return user_dict
 	
 	def import_assignments(self, course_id):
@@ -28,7 +28,7 @@ class CanvasImporter(canvasapi.Canvas):
 		assignments = course.get_assignments()
 		assign_dict = {}
 		for assignment in assignments:
-			assign_dict[assignment.id] = {
+			assign_dict[str(assignment.id)] = {
 				'name':assignment.name,
 				'points':assignment.points_possible,
 				'due':assignment.due_at
