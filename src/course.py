@@ -1,4 +1,4 @@
-import random, miaprinter, webbrowser, test_import, canvasimport, dotenv, os
+import random, miaprinter, webbrowser, test_import, canvasimport, dotenv, os, time
 import ekgconfig as cfg
 
 class Course(object):
@@ -44,7 +44,10 @@ class Course(object):
 		self.new_assignments = dict()
 		for key in assignments:
 			if key not in self.data['assignments']:
-				self.new_assignments[key] = assignments[key]
+				due_date = time.strptime(assignments[key]['due'],'%Y-%m-%dT%H:%M:%SZ')
+				if due_date <= time.localtime():
+					assignments[key]['due'] = time.strftime('%d %b %Y',due_date)
+					self.new_assignments[key] = assignments[key]
 		return self.new_assignments
 	
 	def add_assignments(self, include_assignments='All'):
