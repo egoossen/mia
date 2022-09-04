@@ -88,7 +88,7 @@ class GUI(tk.Tk):
 		self.app.add_assignments(include_assignment)
 		popup.destroy()
 	
-	def preview(self):
+	def preview(self,include_submitted=False):
 		idx = self.lbox.curselection()[0]
 		course_id = self.course_ids[idx]
 
@@ -105,7 +105,7 @@ class GUI(tk.Tk):
 		popup.grab_set()
 		popup.title(title_str)
 		missing_fr = sf.ScrollableFrame(popup,width=350,height=350,padding='5')
-		missing_fr.grid(row=0,column=1,sticky=(tk.N, tk.E, tk.S, tk.W))
+		missing_fr.grid(row=0,column=1,rowspan=2,sticky=(tk.N, tk.E, tk.S, tk.W))
 
 		row = 0
 		student_labels = {}
@@ -116,8 +116,15 @@ class GUI(tk.Tk):
 				missing_fr.scrollable_frame,
 				text=student_name
 			)
+			if not include_submitted:
+				ttk.Button(popup, text='Include Submitted', command=lambda :self.preview(include_submitted=True)).grid(
+					row=0, column=2, sticky = (tk.W, tk.E)	
+				)
+			ttk.Button(popup,text='Save and Print',command=lambda: self.print_report(popup)).grid(
+				row=1,column=2,sticky = (tk.E, tk.W)
+			)
 			for assignment_id, assignment in self.data['assignments'].items():
-				if self.data['missing'][student_id][assignment_id]:
+				if self.data['missing'][student_id][assignment_id] or include_submitted:
 					if not student_included:
 						student_labels[student_id].grid(row=row,column=0,sticky=(tk.W))
 						row += 1
@@ -132,20 +139,22 @@ class GUI(tk.Tk):
 					).grid(row=row,column=0,sticky=(tk.W))
 					row += 1
 
-		
-		ttk.Button(popup,text='Save and Print',command=lambda: self.print_report(popup)).grid(
-			row=0,column=2,sticky = (tk.E, tk.W)
-		)
+
 		for child in popup.winfo_children():
 			child.grid_configure(padx=5, pady=5)
 
 	def print_report(self,popup):
-		popup.destroy()
+		self.destroy_all()
 		for key in self.data['missing']:
 			for item in self.data['missing'][key]:
 				if type(self.data['missing'][key][item]) != bool:
 					self.data['missing'][key][item] = bool(self.data['missing'][key][item].get())
 		self.app.print_report(self.data)
+	
+	def destroy_all(self):
+		for widget in self.winfo_children():
+			if isinstance(widget, tk.Toplevel):
+				widget.destroy()
 
 if __name__ == '__main__':
 	dotenv.load_dotenv()
