@@ -32,12 +32,14 @@ class App(object):
 		self.course.add_assignments(include_assignments)
 
 	def get_data(self):
-		return self.course.get_data()
+		data = self.course.get_data()
+		data['assignments'] = sort_assignments(data['assignments'])
+		data['students'] = sort_students(data['students'])
+		return data
 
 	def print_report(self, all_data):
 		self.course.update_data(all_data)
 		report_data = {}
-		all_data['assignments'] = sort_assignments(all_data['assignments'])
 		for assignment_id, assignment in all_data['assignments'].items():
 			print(assignment['due'])
 			assignment['due'] = time.strftime('%d %b %Y',tuple(assignment['due']))
@@ -59,6 +61,12 @@ class App(object):
 			f.write(html_file)
 		webbrowser.open(outfile)
 
+def sort_students(my_dict):
+	student_list = [(key,value) for key,value in my_dict.items()]
+	student_list = sorted(student_list,key=return_name)
+	sorted_dict = OrderedDict(student_list)
+	return sorted_dict
+
 def sort_assignments(my_dict):
 	assignment_list = []
 	for key,value in my_dict.items():
@@ -69,6 +77,9 @@ def sort_assignments(my_dict):
 
 def return_due(assignment):
 	return time.strftime('%Y%m%d',tuple(assignment[1]['due']))
+
+def return_name(student):
+	return student[1]
 
 if __name__ == '__main__':
 	#dotenv.load_dotenv()
