@@ -29,11 +29,15 @@ class App(object):
 	def print_report(self, all_data):
 		self.course.update_data(all_data)
 		report_data = {}
+		remove_students = {student_id for student_id in all_data['students']}
 		for student_id, student_name in all_data['students'].items():
 			report_data[student_name] = list()
 			for assignment_id, assignment in all_data['assignments'].items():
 				if all_data['missing'][student_id][assignment_id]:
 					report_data[student_name].append(assignment)
+					remove_students.discard(student_id)
+		for student_id in remove_students:
+			del report_data[all_data['students'][student_id]]
 
 		html_file = self.printer.dict2html(self.course.get_name(), report_data)
 		outfile = self.course.get_name().lower().replace(' ','-') + '-mia-report.html'

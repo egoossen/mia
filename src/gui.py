@@ -56,11 +56,17 @@ class GUI(tk.Tk):
 		self.data = self.app.get_data(course_id)
 
 		row = 0
+		student_labels = {}
 		for student_id, student_name in self.data['students'].items():
-			ttk.Label(popup,text=student_name).grid(row=row,column=0,sticky=(tk.W))
-			row += 1
+			student_included = False
+			student_labels[student_id] = ttk.Label(popup,text=student_name)
 			for assignment_id, assignment in self.data['assignments'].items():
 				if self.data['missing'][student_id][assignment_id]:
+					if not student_included:
+						student_labels[student_id].grid(row=row,column=0,sticky=(tk.W))
+						row += 1
+						student_included = True
+					include_student = True
 					self.data['missing'][student_id][assignment_id] = tk.BooleanVar(
 						value = self.data['missing'][student_id][assignment_id])
 					ttk.Checkbutton(
@@ -71,7 +77,7 @@ class GUI(tk.Tk):
 					row += 1
 		
 		ttk.Button(popup,text='Save and Print',command=lambda: self.print_report(popup)).grid(
-			row=0,column=1,sticky = (tk.N, tk.E)
+			row=0,column=1,sticky = (tk.N, tk.E, tk.S, tk.W)
 		)
 
 	def print_report(self,popup):
