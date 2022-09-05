@@ -20,7 +20,6 @@ class CanvasImporter(canvasapi.Canvas):
 		user_dict = {}
 		for user in users:
 			user_dict[str(user.id)] = user.sortable_name
-		user_dict['1252174'] = 'Student, Test'
 		return user_dict
 	
 	def import_assignments(self, course_id):
@@ -45,7 +44,8 @@ class CanvasImporter(canvasapi.Canvas):
 		)
 		submission_dict = {}
 		for submission in submissions:
-			submission_dict[submission.user['id']] = submission.missing
+			if submission.user['sortable_name'] != 'Student, Test':
+				submission_dict[submission.user['id']] = submission.missing
 		return submission_dict
 
 
@@ -108,7 +108,7 @@ if __name__ == '__main__':
 	#ASSIGNMENT_ID = 4100760
 	#COURSE_ID = 805953
 	#assignments = canvas.get_assignments(COURSE_ID)
-	#users = canvas.get_students(COURSE_ID)
+	#users = canvas.import_students(COURSE_ID)
 	#print(users)
 	#assignment_ids = [key for key in assignments]
 	#print(assignments)

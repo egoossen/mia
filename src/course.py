@@ -69,5 +69,3 @@ if __name__ == '__main__':
 	#importer = test_import.TestImporter()
 	importer = canvasimport.CanvasImporter(URL, KEY)
 	course = Course(COURSE_ID, COURSE_NAME,printer,importer)
-	data = course.preview()
-	course.print_report(data)
