@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>MIA Instillation</title>
+	</head>
+	<body>
+		<h1>Installing MIA</h1>
+		<p>Click <a href="https://github.com/egoossen/mia/releases">here</a>
+		to go to the most recent release of MIA. Download the .zip (Windows)
+		or tarball (Linux) depending on your operating system and save it
+		where you want to install MIA.</p>
+		<p>Unzip the folder.</p>
+		<h1>Setting Canvas up to use MIA</h1>
+		<p>Open Canvas.</p>
+		<p>Go to Account > Settings and scroll down to Approved Integrations.</p>
+		<p>Select "+ New Access Token"</p>
+		<p>Name your access token something memorable, select an expiration date,
+			and click "Generate Token"</p>
+		<p>Select your token and press "Ctrl-C" to copy it. This token is only shown
+			once, so if you lose it, you will need to regenerate the token and configure
+			MIA again.</p>
+		<p>Navigate to the folder in which you saved MIA. If there is a file named
+			".env.sample", rename it ".env" and open it. Otherwise, right-click and
+			select New > Text Document and name it ".env".</p>
+		<p>In .env, paste your access token so the first line reads:
+			"CANVAS_API_KEY" = &lt;your access token&gt;</p>
+		<p>Paste your canvas URL into the second line so it reads:
+			"CANVAS_API_URL" = "https://&lt;your school&gt;.instructure.com/"
+		</p>
+		<p>The file should look like this when you are done. Close the file.</p>
+		<p>Right click on the program file (.exe for Windows) and select 
+			Send To > Desktop (create shortcut)</p>
+		<p>Double-click on the shortcut (or the program) to run the program.</p>
+	</body>
+</html>
